@@ -85,19 +85,19 @@ After the SSH connection is established, the script optionally interacts with th
 
     ```bash
     git clone https://github.com/ShohimardonDev/vpn-ssh-tunnel-manager.git
-    cd repo-name
+    cd vpn-ssh-tunnel-manager
     ```
 
 2. Make the script executable:
 
     ```bash
-    chmod +x connect_server.sh
+    chmod +x tunnel.sh
     ```
 
 3. Move the script to `/usr/local/bin` for global access:
 
     ```bash
-    sudo mv connect_server.sh /usr/local/bin/tunnel
+    sudo mv tunnel.sh /usr/local/bin/tunnel
     ```
 
 4. Ensure the script is executable from anywhere:
@@ -118,19 +118,19 @@ After the SSH connection is established, the script optionally interacts with th
 
     ```bash
     git clone https://github.com/ShohimardonDev/vpn-ssh-tunnel-manager.git
-    cd repo-name
+    cd vpn-ssh-tunnel-manager
     ```
 
 2. Make the script executable:
 
     ```bash
-    chmod +x connect_server.sh
+    chmod +x tunnel.sh
     ```
 
 3. Move the script to `/usr/local/bin` for global access:
 
     ```bash
-    sudo mv connect_server.sh /usr/local/bin/tunnel
+    sudo mv tunnel.sh /usr/local/bin/tunnel
     ```
 
 4. Ensure the script is executable from anywhere:
