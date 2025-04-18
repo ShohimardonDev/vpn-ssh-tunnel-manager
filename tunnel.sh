@@ -28,13 +28,20 @@ array set servers {
 # Set common variables
 set timeout -1
 
-# Procedure to establish background VPN tunnel
+proc cleanup {} {
+    global ssh_pids
+    puts "\nCleaning up background processes..."
+    foreach pid $ssh_pids {
+        if {[catch {exec kill -9 $pid} err]} {
+            puts "Failed to kill PID $pid: $err"
+        } else {
+            puts "Terminated PID $pid"
+        }
+    }
+    set ssh_pids [list]
+    puts "Cleanup complete."
+}
 
-# Set trap to clean up on exit (SIGINT or SIGTERM)
-#trap cleanup_vpn SIGINT SIGTERM
-#trap cleanup_vpn SIGINT SIGTERM EXIT
-
-#signal trap SIGINT cleanup_vpn
 #signal trap SIGTERM cleanup_vpn
 proc kill_processes_using_port {local_port} {
     puts "Checking for existing processes using port $local_port..."
@@ -88,10 +95,11 @@ proc kill_processes_using_port {local_port} {
 
 #trap cleanup SIGINT SIGTERM EXIT
 proc establish_vpn_tunnel {host user ssh_port local_port remote_ip remote_port ssh_key password} {
-    global vpn_pid
+    global ssh_pids
+    # Ensure the port is free before starting
     kill_processes_using_port $local_port
+    # Spawn the VPN tunnel in the background
     spawn ssh -i $ssh_key -L $local_port:$remote_ip:$remote_port $user@$host -p $ssh_port -N -f
-    set vpn_pid [pid $spawn_id]
     expect {
         "Enter passphrase for key" {
             send "$password\r"
@@ -102,10 +110,32 @@ proc establish_vpn_tunnel {host user ssh_port local_port remote_ip remote_port s
             exp_continue
         }
         default {
-            # No further interaction; let it run in background
+            # No further interaction needed
         }
     }
+    # Wait briefly for the tunnel to establish
+    after 2000
+    # Capture the PID of the process listening on the local port
+    if {[catch {set pid [exec lsof -i :$local_port -t]} err]} {
+        puts "Failed to find PID for port $local_port: $err"
+    } else {
+        lappend ssh_pids $pid
+        puts "VPN tunnel established with PID: $pid"
+    }
 }
+
+# Set up signal handlers for Ctrl+C (SIGINT) and termination (SIGTERM)
+proc set_trap {} {
+    proc handle_signal {sig} {
+        puts "\nReceived signal $sig. Cleaning up..."
+        cleanup
+        exit 1
+    }
+    interp alias {} SIGINT {} handle_signal SIGINT
+    interp alias {} SIGTERM {} handle_signal SIGTERM
+}
+
+
 # Display detailed menu
 puts "\nAvailable Servers:"
 puts "=================="
@@ -228,4 +258,11 @@ expect {
 }
 
 # Interact with the SSH session if needed
-interact
+interact {
+    \x03 { ;# Ctrl+C
+        cleanup
+        exit 0
+    }
+}
+
+cleanup
