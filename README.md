@@ -56,3 +56,107 @@ array set servers {
         }
     }
 }
+
+
+## Step-by-Step Workflow
+
+### Step 1: Define Servers and Configuration
+You can configure the servers and their connection details in the script, specifying the server’s name, host, SSH credentials, VPN tunnel configurations, and other required parameters.
+
+### Step 2: Establish VPN Tunnel (Optional)
+If a VPN tunnel is configured for the server, the script will attempt to establish it before connecting to the server. This is particularly useful for securing communication when accessing internal services behind a VPN.
+
+### Step 3: Kill Processes Using a Specific Port
+The script will automatically check for any processes that are using the specified local port and kill them if necessary. This ensures that the port is available for the new connection.
+
+### Step 4: SSH Connection
+Once the VPN tunnel is established (if configured), the script uses SSH to connect to the specified server, applying port forwarding to access remote services. If any authentication prompts occur, the script will handle them automatically, sending passwords or passphrases as needed.
+
+### Step 5: Interactive SSH Session
+After the SSH connection is established, the script optionally interacts with the server session, allowing you to run commands as needed.
+
+---
+
+## Installation
+
+### For macOS
+
+1. Clone the repository:
+
+    ```bash
+    git clone https://github.com/ShohimardonDev/vpn-ssh-tunnel-manager.git
+    cd repo-name
+    ```
+
+2. Make the script executable:
+
+    ```bash
+    chmod +x connect_server.sh
+    ```
+
+3. Move the script to `/usr/local/bin` for global access:
+
+    ```bash
+    sudo mv connect_server.sh /usr/local/bin/tunnel
+    ```
+
+4. Ensure the script is executable from anywhere:
+
+    ```bash
+    sudo chmod +x /usr/local/bin/tunnel
+    ```
+
+5. Now you can run the script from anywhere:
+
+    ```bash
+    tunnel
+    ```
+
+### For Linux
+
+1. Clone the repository:
+
+    ```bash
+    git clone https://github.com/ShohimardonDev/vpn-ssh-tunnel-manager.git
+    cd repo-name
+    ```
+
+2. Make the script executable:
+
+    ```bash
+    chmod +x connect_server.sh
+    ```
+
+3. Move the script to `/usr/local/bin` for global access:
+
+    ```bash
+    sudo mv connect_server.sh /usr/local/bin/tunnel
+    ```
+
+4. Ensure the script is executable from anywhere:
+
+    ```bash
+    sudo chmod +x /usr/local/bin/tunnel
+    ```
+
+5. Now you can run the script from anywhere:
+
+    ```bash
+    tunnel
+    ```
+
+---
+
+## Security Considerations
+
+- **Passwords:** It's not recommended to store passwords in plaintext for production use. Consider using environment variables or secrets management tools for storing sensitive information.
+  
+- **SSH Keys:** It's recommended to use SSH keys for authentication instead of passwords for added security.
+
+- **VPN Configurations:** When using VPNs, ensure that your VPN credentials are kept secure and never pushed to a public repository.
+
+---
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
