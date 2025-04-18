@@ -4,28 +4,26 @@
 array set servers {
     1 {
         name "Server name"
-        host "2.3.1.2"          # IP of the main server to SSH into
-        user "username"         # SSH user to log in with
-        ssh_port "22"           # SSH port (default 22 in this case)
-        remote_ip "10.10.0.1"   # Internal IP of a service the server will connect to
-        remote_port "1234"      # Port of the remote service (e.g., MySQL)
-        local_port "1234"       # Local port for communication
-        password "password_here" # Password for SSH authentication (not recommended for production)
-        ssh_key "~/.ssh/key_path"  # Path to the SSH private key for authentication (recommended)
-
-        vpn_tunnel {            # optional VPN configuration
-            password "vpn_server_password"  # VPN password (for VPN authentication)
-            ssh_key "~/.ssh/vpn_key.key"  # SSH key for VPN authentication
-            local_port "1235"             # Local port for VPN tunnel
-            remote_ip "2.2.4.6"          # Remote VPN gateway IP
-            remote_port "3422"           # Remote VPN gateway port
-            user "username"              # VPN user
-            host "2.2.5.9"               # VPN host IP
-            ssh_port "22"                # VPN SSH port
+        host "2.3.1.2"
+        user "username"
+        ssh_port "22"
+        remote_ip "10.10.0.1"
+        remote_port "1234"
+        local_port "1234"
+        password "password_here"
+        ssh_key "~/.ssh/key_path"
+        vpn_tunnel {
+            password "vpn_server_password"
+            ssh_key "~/.ssh/vpn_key.key"
+            local_port "1235"
+            remote_ip "2.2.4.6"
+            remote_port "3422"
+            user "username"
+            host "2.2.5.9"
+            ssh_port "22"
         }
     }
 }
-
 
 # Set common variables
 set timeout -1
@@ -136,15 +134,20 @@ foreach id $sorted_ids {
     puts "   - VPN Tunnel: [expr {[dict exists $servers($id) vpn_tunnel] ? "Enabled" : "Disabled"}]"
 }
 
-# Get user choice
-puts -nonewline "\nEnter server number (1-[array size servers]): "
-flush stdout
-gets stdin choice
+# Check if the script was run with an argument (e.g., `tunnel 7`)
+if {![string equal "$argv" ""]} {
+    set choice $argv
+} else {
+    # Get user choice
+    puts -nonewline "\nEnter server number (1-[array size servers]): "
+    flush stdout
+    gets stdin choice
 
-# Validate choice
-if {![info exists servers($choice)]} {
-    puts "Invalid selection. Exiting."
-    exit 1
+    # Validate choice
+    if {![info exists servers($choice)]} {
+        puts "Invalid selection. Exiting."
+        exit 1
+    }
 }
 
 # Get selected server configuration
